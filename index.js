@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 const portToListenTo = 3001
 
-const notes = [
+const persons = [
   { 
     "id": 1,
     "name": "Arto Hellas", 
@@ -27,9 +27,15 @@ const notes = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  response.json(notes)
+  response.json(persons)
 })
 
+app.get('/info', (request, response) => {
+  response.send(`
+    <p>Phonebook has info for ${persons.length} people</p>
+    <p>${new Date().toString()}</p>
+  `)
+})
 
 app.listen(portToListenTo, () => {
   console.log(`Server running on port ${portToListenTo}`)
