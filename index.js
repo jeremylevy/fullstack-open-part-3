@@ -31,7 +31,24 @@ const randomNumberBetweenInterval = (min, max) => (
   Math.floor(Math.random() * (max - min + 1) + min)
 )
 
-app.use(morgan('tiny'))
+app.use(morgan((tokens, request, response) => {
+  const logLineComponents = [
+    tokens.method(request, response),
+    tokens.url(request, response),
+    tokens.status(request, response),
+    tokens.res(request, response, 'content-length'),
+    '-',
+    tokens['response-time'](request, response),
+    'ms',
+  ]
+
+  if (request.method === 'POST') {
+    logLineComponents.push(JSON.stringify(request.body))
+  }
+
+  return logLineComponents.join(' ')
+}))
+
 app.use(express.json())
 
 app.get('/api/persons', (request, response) => {
