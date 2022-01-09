@@ -26,8 +26,28 @@ let persons = [
   }
 ]
 
+const randomNumberBetweenInterval = (min, max) => (
+  Math.floor(Math.random() * (max - min + 1) + min)
+)
+
+app.use(express.json())
+
 app.get('/api/persons', (request, response) => {
   response.json(persons)
+})
+
+app.post('/api/persons', (request, response) => {
+  const newPersonData = request.body
+
+  const newPerson = {
+    id: randomNumberBetweenInterval(0, 1e6),
+    name: newPersonData.name,
+    number: newPersonData.number
+  }
+
+  persons = [...persons, newPerson]
+
+  response.json(newPerson)
 })
 
 app.get('/api/persons/:id', (request, response) => {
