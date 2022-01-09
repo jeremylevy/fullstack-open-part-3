@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 const portToListenTo = 3001
 
-const persons = [
+let persons = [
   { 
     "id": 1,
     "name": "Arto Hellas", 
@@ -39,6 +39,19 @@ app.get('/api/persons/:id', (request, response) => {
   }
 
   response.json(person)
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const personId = Number(request.params.id)
+  const personToDelete = persons.find(person => person.id === personId)
+
+  if (!personToDelete) {
+    return response.status(404).end()
+  }
+
+  persons = persons.filter(person => person !== personToDelete)
+
+  response.status(204).end()
 })
 
 app.get('/info', (request, response) => {
