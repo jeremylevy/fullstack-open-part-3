@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 
 const app = express()
 const portToListenTo = 3001
@@ -30,6 +31,7 @@ const randomNumberBetweenInterval = (min, max) => (
   Math.floor(Math.random() * (max - min + 1) + min)
 )
 
+app.use(morgan('tiny'))
 app.use(express.json())
 
 app.get('/api/persons', (request, response) => {
