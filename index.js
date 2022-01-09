@@ -38,6 +38,23 @@ app.get('/api/persons', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
   const newPersonData = request.body
+  let badRequestErrorMessage = null
+
+  if (!newPersonData.name || !newPersonData.number) {
+    badRequestErrorMessage = !newPersonData.name ? 'name must be set' : 'number must be set'
+  }
+
+  const personWithThisName = persons.find(person => person.name === newPersonData.name)
+
+  if (personWithThisName) {
+    badRequestErrorMessage = 'name must be unique'
+  }
+
+  if (badRequestErrorMessage) {
+    return response.status(400).json({
+      error: badRequestErrorMessage
+    })
+  }
 
   const newPerson = {
     id: randomNumberBetweenInterval(0, 1e6),
