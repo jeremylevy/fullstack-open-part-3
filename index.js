@@ -54,15 +54,13 @@ app.post('/api/persons', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  const personId = Number(request.params.id)
-  const person = persons.find(person => person.id === personId)
+app.get('/api/persons/:id', (request, response, next) => {
+  const personId = request.params.id
 
-  if (!person) {
-    return response.status(404).end()
-  }
-
-  response.json(person)
+  Person
+    .findById(personId)
+    .then(person => response.json(person))
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -89,11 +87,17 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.get('/info', (request, response) => {
-  response.send(`
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${new Date().toString()}</p>
-  `)
+app.get('/info', (request, response, next) => {
+  Person
+    .countDocuments()
+    .then(nbOfPersonsInDb => {
+      response.send(`
+        <p>Phonebook has info for ${nbOfPersonsInDb} people</p>
+        <p>${new Date().toString()}</p>
+      `)
+    })
+    .catch(error => next(error))
+
 })
 
 const errorHandler = (error, request, response, next) => {
