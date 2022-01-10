@@ -37,7 +37,7 @@ app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => response.json(persons))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const newPersonData = request.body
   
   if (!newPersonData.name || !newPersonData.number) {
@@ -49,7 +49,9 @@ app.post('/api/persons', (request, response) => {
   new Person({
     name: newPersonData.name,
     number: newPersonData.number
-  }).save().then(createdPerson => response.json(createdPerson))
+  }).save()
+    .then(createdPerson => response.json(createdPerson))
+    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -63,12 +65,13 @@ app.get('/api/persons/:id', (request, response) => {
   response.json(person)
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   const personId = request.params.id
 
   Person
     .findByIdAndRemove(personId)
     .then(() => response.status(204).end())
+    .catch(error => next(error))
 })
 
 app.get('/info', (request, response) => {
@@ -77,6 +80,12 @@ app.get('/info', (request, response) => {
     <p>${new Date().toString()}</p>
   `)
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error)
+  next(error)
+}
+app.use(errorHandler)
 
 app.listen(portToListenTo, () => {
   console.log(`Server running on port ${portToListenTo}`)
