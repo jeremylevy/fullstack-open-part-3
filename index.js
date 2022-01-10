@@ -64,16 +64,11 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  const personId = Number(request.params.id)
-  const personToDelete = persons.find(person => person.id === personId)
+  const personId = request.params.id
 
-  if (!personToDelete) {
-    return response.status(404).end()
-  }
-
-  persons = persons.filter(person => person !== personToDelete)
-
-  response.status(204).end()
+  Person
+    .findByIdAndRemove(personId)
+    .then(() => response.status(204).end())
 })
 
 app.get('/info', (request, response) => {
