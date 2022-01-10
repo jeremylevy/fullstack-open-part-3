@@ -3,7 +3,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 
 const app = express()
-const portToListenTo = 3001
+const portToListenTo = process.env.PORT || 3001
 
 let persons = [
   { 
