@@ -9,32 +9,7 @@ const Person = require('./models/person')
 const app = express()
 const portToListenTo = process.env.PORT || 3001
 
-let persons = [
-  { 
-    "id": 1,
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": 2,
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": 3,
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": 4,
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  }
-]
-
-const randomNumberBetweenInterval = (min, max) => (
-  Math.floor(Math.random() * (max - min + 1) + min)
-)
+let persons = []
 
 app.use(morgan((tokens, request, response) => {
   const logLineComponents = [
@@ -64,33 +39,17 @@ app.get('/api/persons', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
   const newPersonData = request.body
-  let badRequestErrorMessage = null
-
+  
   if (!newPersonData.name || !newPersonData.number) {
-    badRequestErrorMessage = !newPersonData.name ? 'name must be set' : 'number must be set'
-  }
-
-  const personWithThisName = persons.find(person => person.name === newPersonData.name)
-
-  if (personWithThisName) {
-    badRequestErrorMessage = 'name must be unique'
-  }
-
-  if (badRequestErrorMessage) {
     return response.status(400).json({
-      error: badRequestErrorMessage
+      error: !newPersonData.name ? 'name must be set' : 'number must be set'
     })
   }
 
-  const newPerson = {
-    id: randomNumberBetweenInterval(0, 1e6),
+  new Person({
     name: newPersonData.name,
     number: newPersonData.number
-  }
-
-  persons = [...persons, newPerson]
-
-  response.json(newPerson)
+  }).save().then(createdPerson => response.json(createdPerson))
 })
 
 app.get('/api/persons/:id', (request, response) => {
