@@ -7,9 +7,6 @@ const cors = require('cors')
 const Person = require('./models/person')
 
 const app = express()
-const portToListenTo = process.env.PORT || 3001
-
-let persons = []
 
 app.use(morgan((tokens, request, response) => {
   const logLineComponents = [
@@ -73,7 +70,7 @@ app.put('/api/persons/:id', (request, response, next) => {
   }
 
   Person
-    .findByIdAndUpdate(personId, updatedFieldsForPerson, { new: true })
+    .findByIdAndUpdate(personId, updatedFieldsForPerson, { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => response.json(updatedPerson))
     .catch(error => next(error))
 })
@@ -111,6 +108,7 @@ const errorHandler = (error, request, response, next) => {
 }
 app.use(errorHandler)
 
+const portToListenTo = process.env.PORT || 3001
 app.listen(portToListenTo, () => {
   console.log(`Server running on port ${portToListenTo}`)
 })
