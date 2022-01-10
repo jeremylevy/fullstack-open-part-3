@@ -36,7 +36,7 @@ app.get('/api/persons', (request, response) => {
 
 app.post('/api/persons', (request, response, next) => {
   const newPersonData = request.body
-  
+
   if (!newPersonData.name || !newPersonData.number) {
     return response.status(400).json({
       error: !newPersonData.name ? 'name must be set' : 'number must be set'
